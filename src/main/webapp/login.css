@@ -1,0 +1,75 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 27 may. 2025, 8:43:58 a. m.
+    Author     : fcch1
+*/
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(to right, #2c3e50, #3498db);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    width: 300px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.registro {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9em;
+}

@@ -1,0 +1,84 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 27 may. 2025, 8:45:31 a. m.
+    Author     : fcch1
+*/
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+h2{
+    text-align: left;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+h3 {
+     text-align: left;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+.periodo {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.periodo h2 {
+    color: #3498db;
+    margin-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+    padding: 8px;
+}
+
+td {
+    padding: 8px;
+    background-color: #fafafa;
+}
+
+nav ul {
+    width: 80%;
+    margin: auto;
+    border-radius: 10px;
+    list-style-type: none;
+    background-color: #1286c9;
+}
+nav li {
+    display: inline-flex;
+}
+nav a {
+    padding: 20px;
+    width: 150px;
+}
+nav ul a:hover {
+    background-color: white;
+}
