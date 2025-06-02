@@ -14,39 +14,27 @@
         <title>JSP Page</title>
     </head>
     <body>
+
         <div class="login-container">
+
+
             <h2>Iniciar Sesión</h2>
-            <form action="notas.jsp" method="post" >
+            <form action="login.jsp" method="post" >
                 <div class="input-group">
                     <label for="usuario">Usuario</label>
-                    <input type="text" id="usuario" name="usuario" placeholder="Ingresa tu usuario" required>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu usuario" required>
                 </div>
                 <div class="input-group">
                     <label for="clave">Contraseña</label>
-                    <input type="password" id="clave" name="clave" placeholder="Ingresa tu contraseña" required>
+                    <input type="password" id="pass" name="pass" placeholder="Ingresa tu contraseña" required>
                 </div>
-                <button type="button" onclick="verificarUsuario()">  Entrar </button>
                
+                <button type="submit">Entrar</button>
+
                 <p class="registro">¿No tienes cuenta? <a href="#">Regístrate</a></p>
-                
-                
+
+
             </form>
         </div>
-        <script>
-            
-    function verificarUsuario() {
-        const usuario = document.getElementById('usuario').value.trim().toLowerCase();
-        const form = document.querySelector('form');
-
-        // Ejemplo: si el usuario contiene "docente" o es un valor específico
-        if (usuario.includes("d")) {
-            form.action = "registro.jsp"; // redirige a registro.jsp
-        } else {
-            form.action = "notas.jsp"; // redirige a notas.jsp
-        }
-
-        form.submit(); // Envía el formulario al JSP correspondiente
-    }
-</script>
     </body>
 </html>

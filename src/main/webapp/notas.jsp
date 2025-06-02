@@ -4,6 +4,7 @@
     Author     : fcch1
 --%>
 
+<%@page import="Clases.Notas"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -15,9 +16,23 @@
     </head>
     <body>
 
+        <%@ page import="Clases.Usuario" %>
+        <%@ page import="java.util.List" %>
+
         <%
-            String nombre = request.getParameter("usuario");
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+            if (usuario == null) {
+                response.sendRedirect("index.jsp"); // Redirige si no hay sesión
+                return;
+            }
+
+            String nombre = usuario.getNombre();
+
+            List<Notas> notasFabrizio = (List<Notas>) session.getAttribute("notasFabrizio");
+
         %>
+
 
         <h1>Resumen de Notas - Ingeniería de Sistemas</h1>
 
@@ -37,37 +52,40 @@
             <tr>
                 <td align="center"><strong>Periodo</strong></td>
                 <td align="center"><strong>Curso</strong></td>
-                <td align="center">PF1</td>
-                <td align="center">PF2</td>
+                <td align="center">Nota1</td>
+                <td align="center">Nota2</td>
+                <td align="center">PY</td>
+
                 <td align="center"><strong>Final</strong></td>
 
             </tr>
+            <%
+                if (notasFabrizio != null && notasFabrizio.size() == 3) {
+                    // Cursos en el orden que guardaste: Algoritmos, Base de Datos, Taller Aplicaciones
+                    String[] cursos = {"Algoritmos", "Base De Datos", "Taller Aplicaciones"};
+                    String periodo = "2021-1";
+
+                    for (int i = 0; i < notasFabrizio.size(); i++) {
+                        Notas n = notasFabrizio.get(i);
+            %>
             <tr>
-                <td align="center">2021-1</td>
-                <td>Algoritmos</td>
-                <td align="center">15</td>
-                <td align="center">15</td>
-                <td align="center">15</td>
-
+                <td align="center"><%= periodo%></td>
+                <td><%= cursos[i]%></td>
+                <td align="center"><%= n.getNota1()%></td>
+                <td align="center"><%= n.getNota2()%></td>
+                <td align="center"><%= n.getPy()%></td>
+                <td align="center"><%= String.format("%.2f", n.getNF())%></td>
             </tr>
-
+            <%
+                } // ← cierre del for
+            } else {
+            %>
             <tr>
-                <td align="center">2021-1</td>
-                <td>Base De Datos</td>
-                <td align="center">12></td>
-                <td align="center">18></td>
-                <td align="center">17</td>
-
+                <td colspan="6" align="center">No hay notas registradas para mostrar.</td>
             </tr>
-
-            <tr>
-                <td align="center">2021-1</td>
-                <td>Taller Aplicaciones</td>
-                <td align="center"><15></td>
-                <td align="center"><12</td>
-                <td align="center"><13</td>
-
-            </tr>
+            <%
+                } // ← cierre del if
+            %>
 
         </table>
 

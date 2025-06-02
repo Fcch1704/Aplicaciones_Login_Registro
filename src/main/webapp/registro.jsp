@@ -4,6 +4,8 @@
     Author     : fcch1
 --%>
 
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -15,17 +17,26 @@
     </head>
     <body>
 
-        <%
+        <%@ page import="Clases.Usuario" %>
+        <%@ page import="Clases.Notas" %>
 
-            String nombre = request.getParameter("usuario");
-        
+        <%
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+            if (usuario == null) {
+                response.sendRedirect("index.jsp");
+                return;
+            }
+
+            String nombre = usuario.getNombre();
         %>
+
         <h1>Registro de Notas periodo 2021-1</h1>
 
         <h2>Bienvenido Docente:  <%=nombre%></h2>
 
         <h3>Notas Algoritmos: </h3>
-        <form id="formNotas" action="notas.jsp" method="post">
+        <form id="formNotas" action="GuardarRegistro.jsp" method="post">
 
             <table border="1" cellspacing="4" cellpadding="3">
                 <tr>
@@ -47,6 +58,7 @@
                     <td align="center"><input type="text" id="nota3af" name="nota3af" placeholder="Ingresa la nota" required>
                     </td>
 
+
                 </tr>
 
                 <tr>
@@ -59,6 +71,7 @@
                     <td align="center"><input type="text" id="nota3ae" name="nota3ae" placeholder="Ingresa las nota" required>
                     </td>
 
+
                 </tr>
 
                 <tr>
@@ -70,6 +83,7 @@
                     </td>
                     <td align="center"><input type="text" id="notafas" name="nota3as" placeholder="Ingresa las nota" required>
                     </td>
+
                 </tr>
 
             </table>
