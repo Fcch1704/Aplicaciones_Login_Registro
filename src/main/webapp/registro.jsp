@@ -4,6 +4,12 @@
     Author     : fcch1
 --%>
 
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="Modelo.Curso"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="Modelo.Alumno_Curso"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -13,185 +19,134 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="registro.css">
 
-        <title>JSP Page</title>
+        <title>Registro Notas</title>
     </head>
     <body>
 
-        <%@ page import="Clases.Usuario" %>
-        <%@ page import="Clases.Notas" %>
+        <%@ page import="Modelo.Usuario" %>
+        <%@ page import="Modelo.Alumno_Curso" %>
+
 
         <%
-            Usuario usuario = (Usuario) session.getAttribute("usuario");
+             HttpSession sesion = request.getSession(false);
+            String nombre = (String) sesion.getAttribute("nombre");
+            List<Alumno_Curso> listaNotas = (List<Alumno_Curso>) request.getAttribute("listaNotas");
+            List<Curso> cursos = (List<Curso>) request.getAttribute("cursos");
 
-            if (usuario == null) {
-                response.sendRedirect("index.jsp");
-                return;
+            // Obtener alumnos únicos por curso
+            Map<String, Set<String>> alumnosPorCurso = new HashMap<>();
+            if (listaNotas != null) {
+                for (Alumno_Curso ac : listaNotas) {
+                    alumnosPorCurso.putIfAbsent(ac.getNombreCurso(), new HashSet<>());
+                    alumnosPorCurso.get(ac.getNombreCurso()).add(ac.getNombreUsuario());
+                }
             }
-
-            String nombre = usuario.getNombre();
         %>
 
         <h1>Registro de Notas periodo 2021-1</h1>
 
         <h2>Bienvenido Docente:  <%=nombre%></h2>
 
-        <h3>Notas Algoritmos: </h3>
-        <form id="formNotas" action="GuardarRegistro.jsp" method="post">
+        <!-- Selección de curso -->
+        <label for="comboCursos">Selecciona un curso:</label>
+        <select id="comboCursos" onchange="actualizarAlumnos()">
+            <option value="">-- Seleccionar --</option>
+            <% for (Curso c : cursos) { %>
+                <option value="<%= c.getNombre() %>"><%= c.getNombre() %></option>
+            <% } %>
+        </select>
 
-            <table border="1" cellspacing="4" cellpadding="3">
-                <tr>
-                    <td align="center"><strong>Nombre del Alumno</strong></td>
-                    <td align="center">Curso</td>
-                    <td align="center">PF1</td>
-                    <td align="center">PF2</td>
-                    <td align="center"><strong>Final</strong></td>
-                    <td align="center"></td>
+        <!-- Selección de alumno -->
+        <label for="comboAlumnos">Selecciona un alumno:</label>
+        <select id="comboAlumnos" onchange="mostrarTabla()">
+            <option value="">-- Seleccionar --</option>
+        </select>
 
-                </tr>
-                <tr>
-                    <td align="center">Fabrizio Alonso</td>
-                    <td>Algoritmos</td>
-                    <td align="center"><input type="text" id="nota1af" name="nota1af" placeholder="Ingresa la nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2af" name="nota2af" placeholder="Ingresa la nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3af" name="nota3af" placeholder="Ingresa la nota" required>
-                    </td>
+        <!-- Tabla de notas -->
+        <div id="tablaNotas" style="display: none;">
+            <form id="formNotas" action="controladorNotas" method="post">
+                <table border="1">
+                    <tr>
+                        <th>Alumno</th>
+                        <th>Curso</th>
+                        <th>Nota 1</th>
+                        <th>Nota 2</th>
+                        <th>Nota 3</th>
+                    </tr>
+                    <%
+                        if (listaNotas != null) {
+                            for (Alumno_Curso ac : listaNotas) {
+                    %>
+                    <tr class="filaAlumno" data-curso="<%= ac.getNombreCurso() %>" data-alumno="<%= ac.getNombreUsuario() %>">
+                        <td><%= ac.getNombreUsuario() %></td>
+                        <td><%= ac.getNombreCurso() %></td>
+                        <td><input type="text" name="nota1_<%= ac.getId_ac() %>" value="<%= ac.getNota1() %>"/></td>
+                        <td><input type="text" name="nota2_<%= ac.getId_ac() %>" value="<%= ac.getNota2() %>"/></td>
+                        <td><input type="text" name="nota3_<%= ac.getId_ac() %>" value="<%= ac.getNota3() %>"/></td>
+                    </tr>
+                    <%
+                            }
+                        }
+                    %>
+                </table>
+                <br>
+                <button type="button" onclick="enviarFormulario()"> Subir notas al Sistema </button>
+            </form>
+        </div>
 
+        <script>
+            const alumnosPorCurso = {
+                <% for (Map.Entry<String, Set<String>> entry : alumnosPorCurso.entrySet()) {
+                    String curso = entry.getKey();
+                    Set<String> alumnos = entry.getValue();
+                %>
+                "<%= curso %>": [
+                    <% for (String alumno : alumnos) { %>
+                    "<%= alumno %>",
+                    <% } %>
+                ],
+                <% } %>
+            };
 
-                </tr>
+            function actualizarAlumnos() {
+                const cursoSeleccionado = document.getElementById("comboCursos").value;
+                const comboAlumnos = document.getElementById("comboAlumnos");
+                comboAlumnos.innerHTML = '<option value="">-- Seleccionar --</option>';
 
-                <tr>
-                    <td align="center">Eduardo Lopez</td>
-                    <td>Algoritmos</td>
-                    <td align="center"><input type="text" id="nota1ae" name="nota1ae" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2ae" name="nota2ae" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3ae" name="nota3ae" placeholder="Ingresa las nota" required>
-                    </td>
-
-
-                </tr>
-
-                <tr>
-                    <td align="center">Sebastian Caicedo</td>
-                    <td>Algoritmos</td>
-                    <td align="center"><input type="text" id="nota1as" name="nota1as" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2as" name="nota2as" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="notafas" name="nota3as" placeholder="Ingresa las nota" required>
-                    </td>
-
-                </tr>
-
-            </table>
-            <h3>Notas Base De Datos: </h3>
-
-            <table border="1" cellspacing="4" cellpadding="3">
-                <tr>
-                    <td align="center"><strong>Nombre del Alumno</strong></td>
-                    <td align="center">Curso</td>
-                    <td align="center">PF1</td>
-                    <td align="center">PF2</td>
-                    <td align="center"><strong>Final</strong></td>
-                    <td align="center"></td>
-
-                </tr>
-                <tr>
-                    <td align="center">Fabrizio Alonso</td>
-                    <td>Base De Datos</td>
-                    <td align="center"><input type="text" id="nota1bf" name="nota1bf" placeholder="Ingresa la nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2bf" name="nota2bf" placeholder="Ingresa la nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3bf" name="nota3bf" placeholder="Ingresa la nota" required>
-                    </td>
-
-                </tr>
-
-                <tr>
-                    <td align="center">Eduardo Lopez</td>
-                    <td>Base De Datos</td>
-                    <td align="center"><input type="text" id="nota1be" name="nota1be" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2be" name="nota2be" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3be" name="nota3be" placeholder="Ingresa las nota" required>
-                    </td>
-
-                </tr>
-
-                <tr>
-                    <td align="center">Sebastian Caicedo</td>
-                    <td>Base De Datos</td>
-                    <td align="center"><input type="text" id="nota1bs" name="nota1bs" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2bs" name="nota2bs" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3bs" name="nota3bs" placeholder="Ingresa las nota" required>
-                    </td>
-                </tr>
-
-            </table><h3>Notas Taller_Aplicaciones: </h3>
-
-            <table border="1" cellspacing="4" cellpadding="3">
-                <tr>
-                    <td align="center"><strong>Nombre del Alumno</strong></td>
-                    <td align="center">Curso</td>
-                    <td align="center">PF1</td>
-                    <td align="center">PF2</td>
-                    <td align="center"><strong>Final</strong></td>
-                    <td align="center"></td>
-
-                </tr>
-                <tr>
-                    <td align="center">Fabrizio Alonso</td>
-                    <td>Taller Aplicaciones</td>
-                    <td align="center"><input type="text" id="nota1tf" name="nota1tf" placeholder="Ingresa la nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2tf" name="nota2tf" placeholder="Ingresa la nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3tf" name="nota3tf" placeholder="Ingresa la nota" required>
-                    </td>
-
-                </tr>
-
-                <tr>
-                    <td align="center">Eduardo Lopez</td>
-                    <td>Taller Apliaciones</td>
-                    <td align="center"><input type="text" id="nota1te" name="nota1te" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2te" name="nota2te" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3te" name="nota3te" placeholder="Ingresa las nota" required>
-                    </td>
-
-                </tr>
-
-                <tr>
-                    <td align="center">Sebastian Caicedo</td>
-                    <td>Algoritmos</td>
-                    <td align="center"><input type="text" id="nota1ts" name="nota1ts" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota2ts" name="nota2ts" placeholder="Ingresa las nota" required>
-                    </td>
-                    <td align="center"><input type="text" id="nota3ts" name="nota3ts" placeholder="Ingresa las nota" required>
-                    </td>
-                </tr>
-
-            </table>
-            <br><!-- comment -->
-
-            <button type="button" onclick="enviarFormulario()"> Subir notas al Sistema </button>
-
-            <script>
-                function enviarFormulario() {
-                    alert("¡Las notas se subieron correctamente al sistema!");
-                    document.getElementById("formNotas").submit();
+                if (cursoSeleccionado && alumnosPorCurso[cursoSeleccionado]) {
+                    alumnosPorCurso[cursoSeleccionado].forEach(alumno => {
+                        const option = document.createElement("option");
+                        option.value = alumno;
+                        option.textContent = alumno;
+                        comboAlumnos.appendChild(option);
+                    });
                 }
-            </script>
-        </form>    
+                document.getElementById("tablaNotas").style.display = "none";
+            }
+
+            function mostrarTabla() {
+                const curso = document.getElementById("comboCursos").value;
+                const alumno = document.getElementById("comboAlumnos").value;
+                const filas = document.querySelectorAll(".filaAlumno");
+
+                if (curso && alumno) {
+                    document.getElementById("tablaNotas").style.display = "block";
+                    filas.forEach(fila => {
+                        if (fila.getAttribute("data-curso") === curso && fila.getAttribute("data-alumno") === alumno) {
+                            fila.style.display = "";
+                        } else {
+                            fila.style.display = "none";
+                        }
+                    });
+                } else {
+                    document.getElementById("tablaNotas").style.display = "none";
+                }
+            }
+
+            function enviarFormulario() {
+                alert("¡Las notas del alumno se registraron correctamente!");
+                document.getElementById("formNotas").submit();
+            }
+        </script>
     </body>
 </html>

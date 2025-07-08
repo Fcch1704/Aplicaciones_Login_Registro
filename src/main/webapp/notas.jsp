@@ -4,7 +4,7 @@
     Author     : fcch1
 --%>
 
-<%@page import="Clases.Notas"%>
+<%@page import="Modelo.Alumno_Curso"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -16,79 +16,69 @@
     </head>
     <body>
 
-        <%@ page import="Clases.Usuario" %>
+        <%@ page import="Modelo.Usuario" %>
         <%@ page import="java.util.List" %>
 
         <%
-            Usuario usuario = (Usuario) session.getAttribute("usuario");
+            HttpSession sesion = request.getSession(false); // Evita crear una nueva si no hay sesión
 
-            if (usuario == null) {
-                response.sendRedirect("index.jsp"); // Redirige si no hay sesión
-                return;
-            }
+            String nombre = (String) sesion.getAttribute("nombre");
 
-            String nombre = usuario.getNombre();
-
-            List<Notas> notasFabrizio = (List<Notas>) session.getAttribute("notasFabrizio");
+            List<Alumno_Curso> listaNotas = (List<Alumno_Curso>) request.getAttribute("listaNotas");
 
         %>
 
 
         <h1>Resumen de Notas - Ingeniería de Sistemas</h1>
-
         <nav>
             <ul>
                 <li><a href="notas.jsp">Periodo 2021-1</a></li>
                 <li><a href="2021-2.jsp">Periodo 2021-2</a></li>
-                <li><a href="2022-1.jsp">Periodo 2022-1 </a></li>
+                <li><a href="2022-1.jsp">Periodo 2022-1</a></li>
                 <li><a href="2022-2.jsp">Periodo 2022-2</a></li>
                 <li><a href="2023-1.jsp">Periodo 2023-1</a></li>
             </ul>
         </nav>
-        <h2>Bienvenido:   <%= nombre%></h2>
-        <h3>Sus notas del Periodo 2021-1 son:  </h3>
+        <h2>Bienvenido: <%= nombre%></h2>
 
+        <h3>Notas de <%= nombre%>:</h3>
         <table border="1" cellspacing="4" cellpadding="3">
             <tr>
-                <td align="center"><strong>Periodo</strong></td>
-                <td align="center"><strong>Curso</strong></td>
-                <td align="center">Nota1</td>
-                <td align="center">Nota2</td>
-                <td align="center">PY</td>
-
-                <td align="center"><strong>Final</strong></td>
-
+                <th>Curso</th>
+                <th>Nota 1</th>
+                <th>Nota 2</th>
+                <th>Nota 3</th>
+                <th>Promedio Final</th>
             </tr>
             <%
-                if (notasFabrizio != null && notasFabrizio.size() == 3) {
-                    // Cursos en el orden que guardaste: Algoritmos, Base de Datos, Taller Aplicaciones
-                    String[] cursos = {"Algoritmos", "Base De Datos", "Taller Aplicaciones"};
-                    String periodo = "2021-1";
+                boolean tieneNotas = false;
 
-                    for (int i = 0; i < notasFabrizio.size(); i++) {
-                        Notas n = notasFabrizio.get(i);
+                if (listaNotas != null) {
+                    for (Alumno_Curso ac : listaNotas) {
+                        if (ac.getNombreUsuario().equalsIgnoreCase(nombre)) {
+                            tieneNotas = true;
+                            double promedio = ((ac.getNota1() + ac.getNota2())/2.0 + ac.getNota3()) / 2.0;
             %>
             <tr>
-                <td align="center"><%= periodo%></td>
-                <td><%= cursos[i]%></td>
-                <td align="center"><%= n.getNota1()%></td>
-                <td align="center"><%= n.getNota2()%></td>
-                <td align="center"><%= n.getPy()%></td>
-                <td align="center"><%= String.format("%.2f", n.getNF())%></td>
+                <td><%= ac.getNombreCurso()%></td>
+                <td align="center"><%= ac.getNota1()%></td>
+                <td align="center"><%= ac.getNota2()%></td>
+                <td align="center"><%= ac.getNota3()%></td>
+                <td align="center"><%= String.format("%.2f", promedio)%></td>
             </tr>
             <%
-                } // ← cierre del for
-            } else {
+                        }
+                    }
+                }
+
+                if (!tieneNotas) {
             %>
             <tr>
-                <td colspan="6" align="center">No hay notas registradas para mostrar.</td>
+                <td colspan="5" align="center">No hay notas registradas para <%= nombre%>.</td>
             </tr>
             <%
-                } // ← cierre del if
+                }
             %>
-
         </table>
-
-    </body>
-</html>
+    </body
 
